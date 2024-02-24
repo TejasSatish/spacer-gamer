@@ -1,0 +1,22 @@
+{
+  "name": "spacer-gamer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TejasSatish/spacer-gamer.git"
+  },
+  "author": "optimalfloppy & reaper",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TejasSatish/spacer-gamer/issues"
+  },
+  "homepage": "https://github.com/TejasSatish/spacer-gamer#readme",
+  "dependencies": {
+    "phaser": "^3.80.0"
+  }
+}

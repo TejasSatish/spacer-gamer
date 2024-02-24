@@ -1,21 +1,16 @@
 {
   "name": "spacer-gamer",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/TejasSatish/spacer-gamer.git"
+  "devDependencies": {
+    "vite": "^5.1.4"
   },
-  "author": "optimalfloppy & reaper",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/TejasSatish/spacer-gamer/issues"
-  },
-  "homepage": "https://github.com/TejasSatish/spacer-gamer#readme",
   "dependencies": {
     "phaser": "^3.80.0"
   }

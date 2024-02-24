@@ -1,15 +1,17 @@
 import Phaser from "phaser";
+import { Example } from "./js/test";
 
-const window={
-  width:600,
-  height:600
+const browser={
+  width: window.innerWidth, 
+  height: window.innerHeight
 }
 
 const config = {
   type:Phaser.WEBGL,
-  width:window.width,
-  height:window.height,
-  canvas:canvas
+  width:browser.width,
+  height:browser.height,
+  canvas:canvas,
+  scene: Example
 }
 
 const game= new Phaser.Game(config)

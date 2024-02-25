@@ -1,4 +1,4 @@
-import { playerSpeed } from "./constants"; 
+import { playerSpeed,browser } from "./constants"; 
 export class Example extends Phaser.Scene
 {
     
@@ -25,7 +25,7 @@ export class Example extends Phaser.Scene
         const bg = this.add.image(0,0,"bg").setOrigin(0,0)
         bg.setDisplaySize(this.game.config.width, this.game.config.height);
         
-        this.player = this.physics.add.image(window.innerWidth/2,window.innerHeight*0.8,"ship").setOrigin(0,0)
+        this.player = this.physics.add.image(browser.maxX/2,browser.maxY*0.8,"ship").setOrigin(0,0)
         this.player.setScale(0.05,0.05)
         this.player.setImmovable(true)
         this.player.body.allowGravity = false
@@ -72,15 +72,11 @@ export class Example extends Phaser.Scene
         console.log('hi')
         console.log(this.asteroids)
         for(let i=0;i<n;i++){
-            var minX=0
-            var maxX=window.innerHeight
-            var minY=0
-            var maxY=window.innerWidth
 
-            var spawnOffScreenLeftX=minX-Phaser.Math.Between(50,400)
-            var spawnOffScreenLeftY=minY-Phaser.Math.Between(50,400)
-            var spawnOffScreenRightX=maxX+Phaser.Math.Between(50,400)
-            var spawnOffScreenRightY=maxY+Phaser.Math.Between(50,400)
+            var spawnOffScreenLeftX=browser.minX-Phaser.Math.Between(50,400)
+            var spawnOffScreenLeftY=browser.minY-Phaser.Math.Between(50,400)
+            var spawnOffScreenRightX=browser.maxX+Phaser.Math.Between(50,400)
+            var spawnOffScreenRightY=browser.maxY+Phaser.Math.Between(50,400)
             
             var leftOrRight=Phaser.Math.Between(1,4)
             var size = Phaser.Math.Between(1,10);
@@ -97,6 +93,7 @@ export class Example extends Phaser.Scene
             console.log(`${x},${y},${1/size}`)
             var asteroid=this.physics.add.image(x,y,'asteroid').setScale(1/size)
             this.randomlySetVelocityAndDirection(asteroid,x,y)
+            
             this.asteroids.push(asteroid)
         }
     }
@@ -105,9 +102,13 @@ export class Example extends Phaser.Scene
         var dx=Phaser.Math.Between(50,400);
         var dy=Phaser.Math.Between(50,400);
 
-        // if(x>=maxX){
-        //     dx=-dx
-        // }
+        if(x>=browser.maxX){
+            dx=-dx
+        }
+        if(y>=(browser.maxY/2)){
+            dy=-dy
+        }
+        console.log(`${dx},${dy}`)
         asteroid.setVelocityX(dx)
         asteroid.setVelocityY(dy)
     }

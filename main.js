@@ -11,7 +11,13 @@ const config = {
   width:browser.width,
   height:browser.height,
   canvas:canvas,
-  scene: Example
+  scene: Example,
+  physics:{
+    default:"arcade",
+    arcade:{
+      degug:true
+    }
+  }
 }
 
 const game= new Phaser.Game(config)

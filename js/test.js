@@ -3,39 +3,62 @@ export class Example extends Phaser.Scene
     constructor ()
     {
         super();
+        this.asteroids=[]
     }
 
     preload ()
     {
-        
-        this.load.spritesheet('sussy', 'assets/pngegg.png', { frameWidth: 1920, frameHeight: 1080});
-        this.load.spritesheet('coin', 'assets/pngwing.com.png', { frameWidth: 1920, frameHeight: 1080 });
+        this.load.image('asteroid', 'assets/asteroid.png');
     
     }
 
     create ()
     {
-        
-        // const x = Phaser.Math.Between(100, 700);
-        // const y = Phaser.Math.Between(100, 500);
-        // const x1 = Phaser.Math.Between(100, 700);
-        // const y2 = Phaser.Math.Between(100, 500);
-        const x = 300
-        const y = 500
-        const x1 = 230
-        const y1 = 130
-        const frame = Phaser.Math.Between(0, 4);
-        const frame2 = Phaser.Math.Between(0, 4);
-        this.add.sprite(x, y, 'sussy', frame)
-        this.add.sprite(x1, y1, 'coin', frame2)
+        this.randomlySpawnXAsteroids(10)
     }
 
+    randomlySpawnXAsteroids(n){
+        console.log('hi')
+        console.log(this.asteroids)
+        for(let i=0;i<n;i++){
+            var minX=0
+            var maxX=window.innerHeight
+            var minY=0
+            var maxY=window.innerWidth
 
-    addAnimation (key)
-    {
-        this.add.sprite(400, this.y, 'sussy')
-            .play(key);
-        this.y += 100;
+            var spawnOffScreenLeftX=minX-Phaser.Math.Between(50,400)
+            var spawnOffScreenLeftY=minY-Phaser.Math.Between(50,400)
+            var spawnOffScreenRightX=maxX+Phaser.Math.Between(50,400)
+            var spawnOffScreenRightY=maxY+Phaser.Math.Between(50,400)
+            
+            var leftOrRight=Phaser.Math.Between(1,4)
+            var size = Phaser.Math.Between(1,10);
+
+            var x,y
+            if(leftOrRight===1){
+                x=spawnOffScreenLeftX
+                y=spawnOffScreenLeftY
+            }else{
+                x=spawnOffScreenRightX
+                y=spawnOffScreenRightY
+            }
+
+            console.log(`${x},${y},${1/size}`)
+            var asteroid=this.physics.add.image(x,y,'asteroid').setScale(1/size)
+            this.randomlySetVelocityAndDirection(asteroid,x,y)
+            this.asteroids.push(asteroid)
+        }
+    }
+
+    randomlySetVelocityAndDirection(asteroid,x,y){
+        var dx=Phaser.Math.Between(50,400);
+        var dy=Phaser.Math.Between(50,400);
+
+        // if(x>=maxX){
+        //     dx=-dx
+        // }
+        asteroid.setVelocityX(dx)
+        asteroid.setVelocityY(dy)
     }
 }
 

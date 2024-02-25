@@ -6,6 +6,8 @@ const browser={
   height: window.innerHeight
 }
 
+//const speedDown = 300
+
 const config = {
   type:Phaser.WEBGL,
   width:browser.width,
@@ -15,7 +17,7 @@ const config = {
   physics:{
     default:"arcade",
     arcade:{
-      degug:true
+      debug:true
     }
   }
 }

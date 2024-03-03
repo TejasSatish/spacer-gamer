@@ -94,7 +94,6 @@ export class Example extends Phaser.Scene
             this.player.setVelocityX(0);
             this.player.setVelocityY(0);
         }
-        this.time.addEvent({})
         this.input.on('pointerdown', pointer => {
 
             this.shootlaser(this.player.x+40,this.player.y);

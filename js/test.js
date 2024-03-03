@@ -38,7 +38,7 @@ export class Example extends Phaser.Scene
 
         this.cursor = this.input.keyboard.createCursorKeys()
 
-        this.cursor = this.input.keyboard.addKeys(
+        this.cursors = this.input.keyboard.addKeys(
             {up:Phaser.Input.Keyboard.KeyCodes.W,
             down:Phaser.Input.Keyboard.KeyCodes.S,
             left:Phaser.Input.Keyboard.KeyCodes.A,
@@ -62,7 +62,6 @@ export class Example extends Phaser.Scene
     }
 
     shootlaser(x,y){
-        this.time.delayedCall(1000,)
         var laser=this.physics.add.image(x,y,"laser").setScale(0.05,0.05)
         laser.setVelocityY(-300);
         this.laserGroup.add(laser);
@@ -98,7 +97,9 @@ export class Example extends Phaser.Scene
             this.player.setVelocityY(0);
         }
         this.input.on('pointerdown', pointer => {
-            this.shootlaser(this.player.x+40,this.player.y)
+
+            this.shootlaser(this.player.x+40,this.player.y);
+            delay(1000)
         })
         
     }

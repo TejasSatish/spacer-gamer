@@ -5,11 +5,7 @@ export class Example extends Phaser.Scene
     constructor ()
     {
         super();
-        this.player
-        //this.cursor
-        this.playerSpeed
         this.playerHealth = playerMaxHealth
-        this.laserGroup
 
     }
 
@@ -18,7 +14,7 @@ export class Example extends Phaser.Scene
         
         this.load.image("bg", "assets/spacebg.jpg")
         this.load.image("ship", "assets/Shiptest.png");
-        this.load.image('asteroid', 'assets/asteroid.png');
+        this.load.image('asteroid', 'assets/asteroid1.png');
         this.load.image("laser", "assets/laser.png");
 
     }
@@ -42,6 +38,12 @@ export class Example extends Phaser.Scene
 
         this.cursor = this.input.keyboard.createCursorKeys()
 
+        this.cursor = this.input.keyboard.addKeys(
+            {up:Phaser.Input.Keyboard.KeyCodes.W,
+            down:Phaser.Input.Keyboard.KeyCodes.S,
+            left:Phaser.Input.Keyboard.KeyCodes.A,
+            right:Phaser.Input.Keyboard.KeyCodes.D});
+
         this.asteroids = this.add.group();
         this.time.addEvent({
             delay: 2000,
@@ -60,6 +62,7 @@ export class Example extends Phaser.Scene
     }
 
     shootlaser(x,y){
+        this.time.delayedCall(1000,)
         var laser=this.physics.add.image(x,y,"laser").setScale(0.05,0.05)
         laser.setVelocityY(-300);
         this.laserGroup.add(laser);
@@ -95,9 +98,7 @@ export class Example extends Phaser.Scene
             this.player.setVelocityY(0);
         }
         this.input.on('pointerdown', pointer => {
-
-            this.shootlaser(this.player.x+40,this.player.y);
-            delay(1000)
+            this.shootlaser(this.player.x+40,this.player.y)
         })
         
     }
@@ -112,7 +113,7 @@ export class Example extends Phaser.Scene
         var spawnOffScreenRightY=browser.maxY+Phaser.Math.Between(50,400)
         
         var leftOrRight=Phaser.Math.Between(1,4)
-        var size = Phaser.Math.Between(2,10);
+        var size = Phaser.Math.Between(1,5);
 
         var x,y
         if(leftOrRight===1){

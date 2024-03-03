@@ -1,4 +1,4 @@
-import { playerSpeed,browser } from "./constants"; 
+import { playerSpeed,browser,playerMaxHealth } from "./constants"; 
 export class Example extends Phaser.Scene
 {
     
@@ -6,8 +6,10 @@ export class Example extends Phaser.Scene
     {
         super();
         this.player
-        this.cursor
+        //this.cursor
         this.playerSpeed
+        this.playerHealth = playerMaxHealth
+        this.laserGroup
 
     }
 
@@ -17,13 +19,20 @@ export class Example extends Phaser.Scene
         this.load.image("bg", "assets/spacebg.jpg")
         this.load.image("ship", "assets/Shiptest.png");
         this.load.image('asteroid', 'assets/asteroid.png');
+        this.load.image("laser", "assets/laser.png");
+
     }
 
     create ()
     {
+
+        
         const bg = this.add.image(0,0,"bg").setOrigin(0,0)
         bg.setDisplaySize(this.game.config.width, this.game.config.height);
-        
+
+
+        this.laserGroup = this.add.group();
+
         this.player = this.physics.add.image(browser.maxX/2,browser.maxY*0.8,"ship").setOrigin(0,0)
         this.player.setScale(0.05,0.05)
         this.player.setImmovable(true)
@@ -43,9 +52,20 @@ export class Example extends Phaser.Scene
         this.physics.add.collider(
             this.asteroids,
             this.player,
-            ()=>this.reducePlayerHealth()
-        )
+            ()=>this.time.addEvent({
+                delay: 1000,
+                callback: () => this.reducePlayerHealth()
+            }))
+        this.physics.add.collider(this.laserGroup,this.asteroids)
     }
+
+    shootlaser(x,y){
+        var laser=this.physics.add.image(x,y,"laser").setScale(0.05,0.05)
+        laser.setVelocityY(-300);
+        this.laserGroup.add(laser);
+        
+    }
+
 
     update(){
         
@@ -74,6 +94,12 @@ export class Example extends Phaser.Scene
             this.player.setVelocityX(0);
             this.player.setVelocityY(0);
         }
+        this.time.addEvent({})
+        this.input.on('pointerdown', pointer => {
+
+            this.shootlaser(this.player.x+40,this.player.y);
+            delay(1000)
+        })
         
     }
 
@@ -122,6 +148,16 @@ export class Example extends Phaser.Scene
 
     reducePlayerHealth(){
         console.log('ooopsie')
+         
+        if (this.playerHealth > 0){
+            
+            this.playerHealth = this.playerHealth - 1;
+            console.log(this.playerHealth);
+
+        } else {
+            console.log("Game Over");
+        }
+
     }
 }
 

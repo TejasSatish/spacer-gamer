@@ -7,3 +7,6 @@ export const browser={
     maxY: window.innerHeight,
   }
 
+export const playerMaxHealth = 5
+
+export const playerDamage = 1

@@ -8,8 +8,7 @@ export class Example extends Phaser.Scene
         this.player
         this.cursor
         this.playerSpeed
-          
-        this.asteroids=[]
+
     }
 
     preload ()
@@ -34,7 +33,18 @@ export class Example extends Phaser.Scene
 
         this.cursor = this.input.keyboard.createCursorKeys()
 
-        this.randomlySpawnXAsteroids(10)
+        this.asteroids = this.add.group();
+        this.time.addEvent({
+            delay: 2000,
+            loop: true,
+            callback: () =>this.randomlySpawnAsteroid()
+        })
+        this.physics.add.collider(this.asteroids,this.asteroids)
+        this.physics.add.collider(
+            this.asteroids,
+            this.player,
+            ()=>this.reducePlayerHealth()
+        )
     }
 
     update(){
@@ -68,39 +78,36 @@ export class Example extends Phaser.Scene
     }
 
 
-    randomlySpawnXAsteroids(n){
-        console.log('hi')
-        console.log(this.asteroids)
-        for(let i=0;i<n;i++){
+    randomlySpawnAsteroid(){
+        // console.log('hi')
+        // console.log(this.asteroids)
+        var spawnOffScreenLeftX=browser.minX-Phaser.Math.Between(50,400)
+        var spawnOffScreenLeftY=browser.minY-Phaser.Math.Between(50,400)
+        var spawnOffScreenRightX=browser.maxX+Phaser.Math.Between(50,400)
+        var spawnOffScreenRightY=browser.maxY+Phaser.Math.Between(50,400)
+        
+        var leftOrRight=Phaser.Math.Between(1,4)
+        var size = Phaser.Math.Between(2,10);
 
-            var spawnOffScreenLeftX=browser.minX-Phaser.Math.Between(50,400)
-            var spawnOffScreenLeftY=browser.minY-Phaser.Math.Between(50,400)
-            var spawnOffScreenRightX=browser.maxX+Phaser.Math.Between(50,400)
-            var spawnOffScreenRightY=browser.maxY+Phaser.Math.Between(50,400)
-            
-            var leftOrRight=Phaser.Math.Between(1,4)
-            var size = Phaser.Math.Between(1,10);
-
-            var x,y
-            if(leftOrRight===1){
-                x=spawnOffScreenLeftX
-                y=spawnOffScreenLeftY
-            }else{
-                x=spawnOffScreenRightX
-                y=spawnOffScreenRightY
-            }
-
-            console.log(`${x},${y},${1/size}`)
-            var asteroid=this.physics.add.image(x,y,'asteroid').setScale(1/size)
-            this.randomlySetVelocityAndDirection(asteroid,x,y)
-            
-            this.asteroids.push(asteroid)
+        var x,y
+        if(leftOrRight===1){
+            x=spawnOffScreenLeftX
+            y=spawnOffScreenLeftY
+        }else{
+            x=spawnOffScreenRightX
+            y=spawnOffScreenRightY
         }
+
+        // console.log(`${x},${y},${1/size}`)
+        var asteroid=this.physics.add.image(x,y,'asteroid').setScale(1/size)
+        this.randomlySetVelocityAndDirection(asteroid,x,y)
+
+        this.asteroids.add(asteroid)
     }
 
     randomlySetVelocityAndDirection(asteroid,x,y){
-        var dx=Phaser.Math.Between(50,400);
-        var dy=Phaser.Math.Between(50,400);
+        var dx=Phaser.Math.Between(20,50);
+        var dy=Phaser.Math.Between(20,50);
 
         if(x>=browser.maxX){
             dx=-dx
@@ -111,6 +118,10 @@ export class Example extends Phaser.Scene
         console.log(`${dx},${dy}`)
         asteroid.setVelocityX(dx)
         asteroid.setVelocityY(dy)
+    }
+
+    reducePlayerHealth(){
+        console.log('ooopsie')
     }
 }
 

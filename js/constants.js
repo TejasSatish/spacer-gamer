@@ -1,4 +1,4 @@
-export const playerSpeed = 300
+export const playerSpeed = 70
 
 export const browser={
     minX: 0,

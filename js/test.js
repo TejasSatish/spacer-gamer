@@ -28,7 +28,7 @@ export class Example extends Phaser.Scene
 
         this.laserGroup = this.add.group();
 
-        this.player = this.physics.add.image(browser.maxX/2,browser.maxY*0.8,"ship").setOrigin(0.5,0.5)
+        this.player = this.physics.add.image(browser.maxX/2,browser.maxY*0.8,"ship").setOrigin(0.5,0.5).setAngle(0)
         this.player.setScale(0.05,0.05)
         this.player.setImmovable(true)
         this.player.setCollideWorldBounds(true)
@@ -40,10 +40,8 @@ export class Example extends Phaser.Scene
         this.cursor = this.input.keyboard.addKeys(
             {up:Phaser.Input.Keyboard.KeyCodes.W,
             down:Phaser.Input.Keyboard.KeyCodes.S,
-            left:Phaser.Input.Keyboard.KeyCodes.A,
-            right:Phaser.Input.Keyboard.KeyCodes.D,
-            turnLeft:Phaser.Input.Keyboard.KeyCodes.Q,
-            turnRight:Phaser.Input.Keyboard.KeyCodes.E});
+            turnLeft:Phaser.Input.Keyboard.KeyCodes.A,
+            turnRight:Phaser.Input.Keyboard.KeyCodes.D});
 
         this.asteroids = this.add.group();
         this.time.addEvent({
@@ -74,52 +72,50 @@ export class Example extends Phaser.Scene
         
         const { left, right, up, down, turnLeft, turnRight } = this.cursor;
 
-        if (left.isDown && right.isDown) {
-            this.player.setVelocityX(0);
-            
-        } else if (left.isDown) {
-            this.player.setVelocityX(-playerSpeed);
-            
-        } else if (right.isDown) {
-            this.player.setVelocityX(playerSpeed);
-            
-        } else if (up.isDown && down.isDown) {
-            this.player.setVelocityY(0);
-            
-        } else if (up.isDown) {
-            this.player.setVelocityY(-playerSpeed);
-            
-        } else if (down.isDown) {
-            this.player.setVelocityY(playerSpeed);
-            
-        } else {
-            this.player.setVelocityX(0);
-            this.player.setVelocityY(0);
-        }
-
+        
         if (turnLeft.isDown) {
+            this.player.rotation -= playerRotationSpeed;
             this.barrelX=this.player.x - Math.cos(this.player.rotation)*40
             this.barrelY=this.player.y - Math.sin(this.player.rotation)*30
-            this.player.rotation=this.player.rotation-playerRotationSpeed
         }
         if (turnRight.isDown) {
+            this.player.rotation += playerRotationSpeed;
             this.barrelX=this.player.x + Math.cos(this.player.rotation)*40
             this.barrelY=this.player.y + Math.sin(this.player.rotation)*30
-            this.player.rotation=this.player.rotation+playerRotationSpeed
+        }
+    
+        const angle = this.player.rotation;
+        const xSpeed = Math.sin(angle) * playerSpeed;
+        const ySpeed = Math.cos(angle) * playerSpeed;
+    
+        
+        if (up.isDown) {
+            
+            this.player.setVelocityX(+xSpeed);
+            this.player.setVelocityY(-ySpeed);
+
+        } else if (down.isDown) {
+            
+            this.player.setVelocityX(-xSpeed); 
+            this.player.setVelocityY(+ySpeed); 
+            
+        } else {
+            
+            this.player.setVelocity(0);
         }
 
         this.input.on('pointerdown', pointer => {
             console.log(this.player.rotation)
             this.shootlaser(this.barrelX,this.barrelY);
             delay(1000)
-        })
-        
+        })          
+                
+                
     }
 
 
     randomlySpawnAsteroid(){
-        // console.log('hi')
-        // console.log(this.asteroids)
+
         var spawnOffScreenLeftX=browser.minX-Phaser.Math.Between(50,400)
         var spawnOffScreenLeftY=browser.minY-Phaser.Math.Between(50,400)
         var spawnOffScreenRightX=browser.maxX+Phaser.Math.Between(50,400)

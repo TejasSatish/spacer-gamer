@@ -62,8 +62,19 @@ export class Example extends Phaser.Scene
 
     shootlaser(x,y){
         var laser=this.physics.add.image(x,y,"laser").setScale(0.05,0.05)
-        laser.setVelocityY(-300);
+        laser.rotation = this.player.rotation
+        //laser.setVelocityY(-300);
+        const laserSpeed = 300;
+        const angle = this.player.rotation;
+        var xSpeed = Math.sin(angle) * laserSpeed;
+        var ySpeed = Math.cos(angle) * laserSpeed;
+        
+
+        laser.setVelocityX(+xSpeed);
+        laser.setVelocityY(-ySpeed);
         this.laserGroup.add(laser);
+
+        
         
     }
 

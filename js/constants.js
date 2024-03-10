@@ -1,4 +1,5 @@
 export const playerSpeed = 70
+export const playerRotationSpeed = 0.05
 
 export const browser={
     minX: 0,

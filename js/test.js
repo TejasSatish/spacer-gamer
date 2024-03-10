@@ -1,4 +1,4 @@
-import { playerSpeed,browser,playerMaxHealth } from "./constants"; 
+import { playerSpeed,browser,playerMaxHealth,playerRotationSpeed } from "./constants"; 
 export class Example extends Phaser.Scene
 {
     
@@ -26,23 +26,24 @@ export class Example extends Phaser.Scene
         const bg = this.add.image(0,0,"bg").setOrigin(0,0)
         bg.setDisplaySize(this.game.config.width, this.game.config.height);
 
-
         this.laserGroup = this.add.group();
 
-        this.player = this.physics.add.image(browser.maxX/2,browser.maxY*0.8,"ship").setOrigin(0,0)
+        this.player = this.physics.add.image(browser.maxX/2,browser.maxY*0.8,"ship").setOrigin(0.5,0.5)
         this.player.setScale(0.05,0.05)
         this.player.setImmovable(true)
-        this.player.body.allowGravity = false
         this.player.setCollideWorldBounds(true)
-
-
+        this.playerAngle=Phaser.Math.DegToRad(0)
+        this.barrelX=this.player.x
+        this.barrelY=this.player.y-50
         this.cursor = this.input.keyboard.createCursorKeys()
 
         this.cursor = this.input.keyboard.addKeys(
             {up:Phaser.Input.Keyboard.KeyCodes.W,
             down:Phaser.Input.Keyboard.KeyCodes.S,
             left:Phaser.Input.Keyboard.KeyCodes.A,
-            right:Phaser.Input.Keyboard.KeyCodes.D});
+            right:Phaser.Input.Keyboard.KeyCodes.D,
+            turnLeft:Phaser.Input.Keyboard.KeyCodes.Q,
+            turnRight:Phaser.Input.Keyboard.KeyCodes.E});
 
         this.asteroids = this.add.group();
         this.time.addEvent({
@@ -71,8 +72,7 @@ export class Example extends Phaser.Scene
 
     update(){
         
-        const { left, right, up, down } = this.cursor;
-     
+        const { left, right, up, down, turnLeft, turnRight } = this.cursor;
 
         if (left.isDown && right.isDown) {
             this.player.setVelocityX(0);
@@ -96,9 +96,21 @@ export class Example extends Phaser.Scene
             this.player.setVelocityX(0);
             this.player.setVelocityY(0);
         }
-        this.input.on('pointerdown', pointer => {
 
-            this.shootlaser(this.player.x+40,this.player.y);
+        if (turnLeft.isDown) {
+            this.barrelX=this.player.x - Math.cos(this.player.rotation)*40
+            this.barrelY=this.player.y - Math.sin(this.player.rotation)*30
+            this.player.rotation=this.player.rotation-playerRotationSpeed
+        }
+        if (turnRight.isDown) {
+            this.barrelX=this.player.x + Math.cos(this.player.rotation)*40
+            this.barrelY=this.player.y + Math.sin(this.player.rotation)*30
+            this.player.rotation=this.player.rotation+playerRotationSpeed
+        }
+
+        this.input.on('pointerdown', pointer => {
+            console.log(this.player.rotation)
+            this.shootlaser(this.barrelX,this.barrelY);
             delay(1000)
         })
         

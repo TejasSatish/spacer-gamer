@@ -43,6 +43,10 @@ export class Example extends Phaser.Scene
             turnLeft:Phaser.Input.Keyboard.KeyCodes.A,
             turnRight:Phaser.Input.Keyboard.KeyCodes.D});
 
+        this.gunReady = true;
+        this.pointer = this.input.activePointer;
+        
+
         this.asteroids = this.add.group();
         this.time.addEvent({
             delay: 2000,
@@ -61,21 +65,23 @@ export class Example extends Phaser.Scene
     }
 
     shootlaser(x,y){
-        var laser=this.physics.add.image(x,y,"laser").setScale(0.05,0.05)
-        laser.rotation = this.player.rotation
-        //laser.setVelocityY(-300);
-        const laserSpeed = 300;
-        const angle = this.player.rotation;
-        var xSpeed = Math.sin(angle) * laserSpeed;
-        var ySpeed = Math.cos(angle) * laserSpeed;
-        
+        if(!this.cooldown){
+            var laser=this.physics.add.image(x,y,"laser").setScale(0.05,0.05)
+            laser.rotation = this.player.rotation
+            //laser.setVelocityY(-300);
+            const laserSpeed = 300;
+            const angle = this.player.rotation;
+            var xSpeed = Math.sin(angle) * laserSpeed;
+            var ySpeed = Math.cos(angle) * laserSpeed;
+            
 
-        laser.setVelocityX(+xSpeed);
-        laser.setVelocityY(-ySpeed);
-        this.laserGroup.add(laser);
+            laser.setVelocityX(+xSpeed);
+            laser.setVelocityY(-ySpeed);
+            this.laserGroup.add(laser);
 
-        
-        
+            this.cooldown=true
+            this.time.delayedCall(1000,()=>{ this.cooldown=false })
+        }
     }
 
 
@@ -114,14 +120,14 @@ export class Example extends Phaser.Scene
             
             this.player.setVelocity(0);
         }
-
-        this.input.on('pointerdown', pointer => {
-            console.log(this.player.rotation)
+          
+        if(this.pointer.leftButtonDown() && this.gunReady){
             this.shootlaser(this.barrelX,this.barrelY);
-            delay(1000)
-        })          
-                
-                
+            this.gunReady = false;
+        }
+        if(this.pointer.leftButtonReleased() && !this.gunReady){
+            this.gunReady = true;
+        }
     }
 
 

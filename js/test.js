@@ -1,4 +1,4 @@
-import { playerSpeed,browser,playerMaxHealth,playerRotationSpeed } from "./constants"; 
+import { browser, playerSpeed, laserSpeed, playerMaxHealth, playerRotationSpeed, playerMovementDrag, shootCooldown, invincibilty } from "./constants"; 
 export class Example extends Phaser.Scene
 {
     
@@ -33,15 +33,15 @@ export class Example extends Phaser.Scene
         this.player.setImmovable(true)
         this.player.setCollideWorldBounds(true)
         this.playerAngle=Phaser.Math.DegToRad(0)
-        this.barrelX=this.player.x
-        this.barrelY=this.player.y-50
+        this.offsetX=0
+        this.offsetY=-50
         this.cursor = this.input.keyboard.createCursorKeys()
 
         this.cursor = this.input.keyboard.addKeys(
             {up:Phaser.Input.Keyboard.KeyCodes.W,
-            down:Phaser.Input.Keyboard.KeyCodes.S,
             turnLeft:Phaser.Input.Keyboard.KeyCodes.A,
-            turnRight:Phaser.Input.Keyboard.KeyCodes.D});
+            turnRight:Phaser.Input.Keyboard.KeyCodes.D,
+            shoot:Phaser.Input.Keyboard.KeyCodes.SPACE});
 
         this.gunReady = true;
         this.pointer = this.input.activePointer;
@@ -57,48 +57,21 @@ export class Example extends Phaser.Scene
         this.physics.add.collider(
             this.asteroids,
             this.player,
-            ()=>this.time.addEvent({
-                delay: 1000,
-                callback: () => this.reducePlayerHealth()
-            }))
+            ()=> this.reducePlayerHealth()
+            )
         this.physics.add.collider(this.laserGroup,this.asteroids)
     }
 
-    shootlaser(x,y){
-        if(!this.cooldown){
-            var laser=this.physics.add.image(x,y,"laser").setScale(0.05,0.05)
-            laser.rotation = this.player.rotation
-            //laser.setVelocityY(-300);
-            const laserSpeed = 300;
-            const angle = this.player.rotation;
-            var xSpeed = Math.sin(angle) * laserSpeed;
-            var ySpeed = Math.cos(angle) * laserSpeed;
-            
-
-            laser.setVelocityX(+xSpeed);
-            laser.setVelocityY(-ySpeed);
-            this.laserGroup.add(laser);
-
-            this.cooldown=true
-            this.time.delayedCall(1000,()=>{ this.cooldown=false })
-        }
-    }
-
-
     update(){
         
-        const { left, right, up, down, turnLeft, turnRight } = this.cursor;
+        const {  up, turnLeft, turnRight, shoot } = this.cursor;
 
         
         if (turnLeft.isDown) {
             this.player.rotation -= playerRotationSpeed;
-            this.barrelX=this.player.x - Math.cos(this.player.rotation)*40
-            this.barrelY=this.player.y - Math.sin(this.player.rotation)*30
         }
         if (turnRight.isDown) {
             this.player.rotation += playerRotationSpeed;
-            this.barrelX=this.player.x + Math.cos(this.player.rotation)*40
-            this.barrelY=this.player.y + Math.sin(this.player.rotation)*30
         }
     
         const angle = this.player.rotation;
@@ -110,26 +83,37 @@ export class Example extends Phaser.Scene
             
             this.player.setVelocityX(+xSpeed);
             this.player.setVelocityY(-ySpeed);
-
-        } else if (down.isDown) {
-            
-            this.player.setVelocityX(-xSpeed); 
-            this.player.setVelocityY(+ySpeed); 
-            
-        } else {
-            
-            this.player.setVelocity(0);
+            this.player.setDrag(playerMovementDrag);
         }
           
-        if(this.pointer.leftButtonDown() && this.gunReady){
-            this.shootlaser(this.barrelX,this.barrelY);
-            this.gunReady = false;
-        }
-        if(this.pointer.leftButtonReleased() && !this.gunReady){
-            this.gunReady = true;
+        if(this.pointer.leftButtonDown() || shoot.isDown){
+            this.shootlaser();
         }
     }
 
+    shootlaser(){
+        if(!this.cooldown){
+            this.barrelX = this.player.x + this.offsetX * Math.cos(this.player.rotation);
+            this.barrelY = this.player.y + this.offsetY * Math.sin(this.player.rotation);
+            var laser=this.physics.add.image(this.barrelX,this.barrelY,"laser").setScale(0.05,0.05)
+            // .setOrigin(1,0)
+            // laser.setCircle(100)
+            laser.rotation = this.player.rotation
+            
+            const angle = this.player.rotation;
+            var xSpeed = Math.sin(angle) * laserSpeed;
+            var ySpeed = Math.cos(angle) * laserSpeed;
+            this.barrelX = this.player.x + this.offsetX;
+            this.barrelY = this.player.y + this.offsetY;
+
+            laser.setVelocityX(+xSpeed);
+            laser.setVelocityY(-ySpeed);
+            this.laserGroup.add(laser);
+
+            this.cooldown=true
+            this.time.delayedCall(shootCooldown,()=>{ this.cooldown=false })
+        }
+    }
 
     randomlySpawnAsteroid(){
 
@@ -152,6 +136,8 @@ export class Example extends Phaser.Scene
 
         // console.log(`${x},${y},${1/size}`)
         var asteroid=this.physics.add.image(x,y,'asteroid').setScale(1/size)
+        // .setOrigin(0.5,0.5)
+        // asteroid.setCircle(size*10)
         this.randomlySetVelocityAndDirection(asteroid,x,y)
 
         this.asteroids.add(asteroid)
@@ -173,17 +159,17 @@ export class Example extends Phaser.Scene
     }
 
     reducePlayerHealth(){
-        console.log('ooopsie')
-         
-        if (this.playerHealth > 0){
-            
-            this.playerHealth = this.playerHealth - 1;
-            console.log(this.playerHealth);
-
-        } else {
-            console.log("Game Over");
+        if(!this.invincible){
+            console.log('ooopsie') 
+            if (this.playerHealth > 0){
+                this.playerHealth = this.playerHealth - 1;
+                console.log(this.playerHealth);
+            }else{
+                console.log("Game Over");
+            }
+            this.invincible=true
+            this.time.delayedCall(invincibilty,()=>{ this.invincible=false })
         }
-
     }
 }
 
